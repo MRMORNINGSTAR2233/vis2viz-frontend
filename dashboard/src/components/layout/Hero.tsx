@@ -35,6 +35,13 @@ const exampleCards = [
 ];
 
 export default function Hero() {
+  const scrollToSection = (sectionId: string) => {
+    const section = document.getElementById(sectionId.substring(1));
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section className="relative pt-28 pb-20 overflow-hidden">
       {/* Background effects */}
@@ -132,12 +139,16 @@ export default function Hero() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Link 
-                to="#demo" 
+              <a 
+                href="#how-it-works" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection('#how-it-works');
+                }}
                 className="rounded-md px-6 py-3 bg-dark-800/80 text-gray-300 hover:text-white transition-colors"
               >
-                Download the app →
-              </Link>
+                How it works →
+              </a>
             </motion.div>
           </motion.div>
         </div>

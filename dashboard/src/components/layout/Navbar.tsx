@@ -18,6 +18,19 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const navItems = [
+    { name: 'Features', href: '#features' },
+    { name: 'How it Works', href: '#how-it-works' },
+    { name: 'Pricing', href: '#pricing' }
+  ];
+
+  const scrollToSection = (sectionId: string) => {
+    const section = document.getElementById(sectionId.substring(1));
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <motion.header 
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
@@ -49,18 +62,22 @@ export default function Navbar() {
           </Link>
           
           <nav className="hidden md:flex items-center gap-6">
-            {['Features', 'How it Works', 'Pricing'].map((item, index) => (
+            {navItems.map((item, index) => (
               <motion.div 
-                key={item}
+                key={item.name}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Link 
-                  to={`#${item.toLowerCase().replace(/\s+/g, '-')}`} 
+                <a 
+                  href={item.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection(item.href);
+                  }}
                   className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
                 >
-                  {item}
-                </Link>
+                  {item.name}
+                </a>
               </motion.div>
             ))}
           </nav>

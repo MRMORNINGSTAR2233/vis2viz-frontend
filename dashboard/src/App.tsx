@@ -7,6 +7,8 @@ import Footer from './components/layout/Footer';
 import HolographicBackground from './components/effects/HolographicBackground';
 import CircuitElements from './components/effects/CircuitElements';
 import FloatingShapes from './components/effects/FloatingShapes';
+import HowItWorks from './components/sections/HowItWorks';
+import Pricing from './components/sections/Pricing';
 import { useEffect } from 'react';
 import './index.css';
 
@@ -25,6 +27,8 @@ function LandingPage() {
       <main>
         <Hero />
         <Features />
+        <HowItWorks />
+        <Pricing />
         <CTA />
       </main>
       <Footer />
