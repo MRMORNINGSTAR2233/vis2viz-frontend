@@ -4,6 +4,9 @@ import Hero from './components/layout/Hero';
 import Features from './components/layout/Features';
 import CTA from './components/layout/CTA';
 import Footer from './components/layout/Footer';
+import HolographicBackground from './components/effects/HolographicBackground';
+import CircuitElements from './components/effects/CircuitElements';
+import FloatingShapes from './components/effects/FloatingShapes';
 import { useEffect } from 'react';
 import './index.css';
 
@@ -15,6 +18,9 @@ function LandingPage() {
 
   return (
     <div className="min-h-screen bg-dark-900 text-white relative z-0">
+      <HolographicBackground color="purple" opacity={0.15} />
+      <CircuitElements color="purple" opacity={0.2} />
+      <FloatingShapes color="purple" opacity={0.08} />
       <Navbar />
       <main>
         <Hero />
