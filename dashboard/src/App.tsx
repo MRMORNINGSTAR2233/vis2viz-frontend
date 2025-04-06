@@ -5,6 +5,7 @@ import Features from './components/layout/Features';
 import CTA from './components/layout/CTA';
 import Footer from './components/layout/Footer';
 import { useEffect } from 'react';
+import './index.css';
 
 function LandingPage() {
   useEffect(() => {
@@ -26,6 +27,11 @@ function LandingPage() {
 }
 
 function App() {
+  useEffect(() => {
+    // Add dark mode class to html element
+    document.documentElement.classList.add('dark');
+  }, []);
+
   return (
     <Router>
       <Routes>

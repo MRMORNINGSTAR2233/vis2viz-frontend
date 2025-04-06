@@ -65,7 +65,7 @@ export default function Features() {
     <section id="features" className="py-20 md:py-28 relative">
       {/* Glossy highlight effect */}
       <motion.div 
-        className="absolute top-1/4 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full filter blur-3xl opacity-30"
+        className="absolute top-1/4 right-1/4 w-80 h-80 bg-primary-500/10 rounded-full filter blur-3xl opacity-30"
         animate={{ 
           rotate: [0, 25, 0, -25, 0],
           scale: [1, 1.1, 1, 0.9, 1]
@@ -77,7 +77,7 @@ export default function Features() {
         }}
       ></motion.div>
       <motion.div 
-        className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-blue-500/10 rounded-full filter blur-3xl opacity-30"
+        className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-secondary-500/10 rounded-full filter blur-3xl opacity-30"
         animate={{ 
           rotate: [0, -35, 0, 35, 0],
           scale: [1, 0.9, 1, 1.1, 1]
@@ -99,7 +99,7 @@ export default function Features() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-secondary-400">
               Writes, brainstorms, edits,
             </span> and explores ideas with you
           </motion.h2>
@@ -120,7 +120,7 @@ export default function Features() {
             {features.map((feature, index) => (
               <motion.div
                 key={index}
-                className="glossy-card rounded-xl p-6"
+                className="glossy-card rounded-xl p-6 glossy-purple-accent"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -134,7 +134,7 @@ export default function Features() {
                 }}
               >
                 <motion.div 
-                  className="rounded-full w-12 h-12 flex items-center justify-center bg-purple-500/20 text-purple-400 mb-4"
+                  className="rounded-full w-12 h-12 flex items-center justify-center bg-primary-500/20 text-primary-400 mb-4"
                   animate={{ rotate: [0, 5, 0, -5, 0] }}
                   transition={{ duration: 8, repeat: Infinity, delay: index * 0.5 }}
                 >
@@ -150,7 +150,7 @@ export default function Features() {
             {secondRowFeatures.map((feature, index) => (
               <motion.div
                 key={index}
-                className="glossy-card rounded-xl p-6"
+                className="glossy-card rounded-xl p-6 glossy-purple-accent"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -164,7 +164,7 @@ export default function Features() {
                 }}
               >
                 <motion.div 
-                  className="rounded-full w-12 h-12 flex items-center justify-center bg-blue-500/20 text-blue-400 mb-4"
+                  className="rounded-full w-12 h-12 flex items-center justify-center bg-secondary-500/20 text-secondary-400 mb-4"
                   animate={{ rotate: [0, -5, 0, 5, 0] }}
                   transition={{ duration: 8, repeat: Infinity, delay: index * 0.5 + 0.5 }}
                 >

@@ -22,7 +22,7 @@ export default function Navbar() {
     <motion.header 
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
         isScrolled 
-          ? 'bg-dark-900/90 backdrop-blur-md border-b border-white/5' 
+          ? 'bg-dark-800/90 backdrop-blur-md border-b border-white/5 glossy-purple-accent' 
           : 'bg-transparent'
       }`}
       initial={{ y: -100 }}
@@ -33,7 +33,7 @@ export default function Navbar() {
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center space-x-2">
             <motion.span 
-              className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500"
+              className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-secondary-400"
               animate={{ 
                 backgroundPosition: ['0% center', '100% center', '0% center'],
               }}
@@ -78,8 +78,9 @@ export default function Navbar() {
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            className="purple-glow"
           >
-            <Link to="/signup" className="inline-flex items-center justify-center rounded-md bg-white/10 border border-white/20 px-4 py-2 text-sm font-medium text-white hover:bg-white/20 transition-colors backdrop-blur-sm">
+            <Link to="/signup" className="inline-flex items-center justify-center rounded-md bg-primary-600/90 hover:bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors backdrop-blur-sm">
               Try Now
             </Link>
           </motion.div>

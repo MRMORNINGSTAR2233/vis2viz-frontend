@@ -40,7 +40,7 @@ export default function Hero() {
       {/* Background effects */}
       <div className="absolute inset-0 -z-10 opacity-20">
         <motion.div 
-          className="absolute -top-48 -left-48 w-96 h-96 bg-purple-500/20 rounded-full filter blur-3xl animate-pulse-glow"
+          className="absolute -top-48 -left-48 w-96 h-96 bg-primary-500/20 rounded-full filter blur-3xl animate-pulse-glow"
           animate={{ 
             rotate: [0, 15, 0, -15, 0],
             scale: [1, 1.05, 1, 0.95, 1]
@@ -52,7 +52,7 @@ export default function Hero() {
           }}
         ></motion.div>
         <motion.div 
-          className="absolute top-1/4 right-0 w-80 h-80 bg-blue-500/20 rounded-full filter blur-3xl animate-pulse-glow" 
+          className="absolute top-1/4 right-0 w-80 h-80 bg-secondary-500/20 rounded-full filter blur-3xl animate-pulse-glow" 
           style={{ animationDelay: '1s' }}
           animate={{ 
             rotate: [0, -20, 0, 20, 0],
@@ -66,7 +66,7 @@ export default function Hero() {
           }}
         ></motion.div>
         <motion.div 
-          className="absolute bottom-0 left-1/3 w-64 h-64 bg-cyan-500/20 rounded-full filter blur-3xl animate-pulse-glow"
+          className="absolute bottom-0 left-1/3 w-64 h-64 bg-secondary-400/20 rounded-full filter blur-3xl animate-pulse-glow"
           style={{ animationDelay: '2s' }}
           animate={{ 
             rotate: [0, 20, 0, -20, 0],
@@ -93,7 +93,7 @@ export default function Hero() {
             <br />
             Find valuable patterns.
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-secondary-400">
               Drive better decisions.
             </span>
           </motion.h1>
@@ -115,7 +115,7 @@ export default function Hero() {
           >
             <Link 
               to="/signup" 
-              className="rounded-md px-6 py-3 bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors backdrop-blur-sm"
+              className="rounded-md px-6 py-3 bg-primary-600/90 hover:bg-primary-600 text-white transition-colors backdrop-blur-sm purple-glow"
             >
               Start now →
             </Link>
@@ -138,7 +138,7 @@ export default function Hero() {
           {exampleCards.map((card, index) => (
             <motion.div 
               key={index} 
-              className="glossy-card p-6 rounded-xl text-left hover:bg-dark-800/50 cursor-pointer"
+              className="glossy-card p-6 rounded-xl text-left hover:bg-dark-700/50 cursor-pointer glossy-purple-accent"
               whileHover={{ 
                 scale: 1.02,
                 rotate: [0, 0.5],
