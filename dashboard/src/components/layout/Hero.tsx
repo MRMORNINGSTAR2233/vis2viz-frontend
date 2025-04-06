@@ -42,12 +42,11 @@ export default function Hero() {
         <motion.div 
           className="absolute -top-48 -left-48 w-96 h-96 bg-primary-500/20 rounded-full filter blur-3xl animate-pulse-glow"
           animate={{ 
-            rotate: [0, 15, 0, -15, 0],
             scale: [1, 1.05, 1, 0.95, 1]
           }}
           transition={{ 
             duration: 20, 
-            repeat: Infinity,
+            repeat: Infinity, 
             ease: "easeInOut" 
           }}
         ></motion.div>
@@ -55,28 +54,26 @@ export default function Hero() {
           className="absolute top-1/4 right-0 w-80 h-80 bg-secondary-500/20 rounded-full filter blur-3xl animate-pulse-glow" 
           style={{ animationDelay: '1s' }}
           animate={{ 
-            rotate: [0, -20, 0, 20, 0],
             scale: [1, 0.95, 1, 1.05, 1]
           }}
           transition={{ 
             duration: 25, 
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
+            repeat: Infinity, 
+            ease: "easeInOut", 
+            delay: 2 
           }}
         ></motion.div>
         <motion.div 
           className="absolute bottom-0 left-1/3 w-64 h-64 bg-secondary-400/20 rounded-full filter blur-3xl animate-pulse-glow"
           style={{ animationDelay: '2s' }}
           animate={{ 
-            rotate: [0, 20, 0, -20, 0],
             scale: [1, 1.1, 1, 0.9, 1]
           }}
           transition={{ 
             duration: 18, 
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1
+            repeat: Infinity, 
+            ease: "easeInOut", 
+            delay: 1 
           }}
         ></motion.div>
       </div>
@@ -89,11 +86,18 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
           >
-            Decode audio data.
+            <span>
+              Decode audio data.
+            </span>
             <br />
-            Find valuable patterns.
+            <span>
+              Find valuable patterns.
+            </span>
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-secondary-400">
+            <span 
+              className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-secondary-400"
+              style={{ backgroundSize: '200% 100%' }}
+            >
               Drive better decisions.
             </span>
           </motion.h1>
@@ -113,57 +117,76 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            <Link 
-              to="/signup" 
-              className="rounded-md px-6 py-3 bg-primary-600/90 hover:bg-primary-600 text-white transition-colors backdrop-blur-sm purple-glow"
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              Start now →
-            </Link>
-            <Link 
-              to="#demo" 
-              className="rounded-md px-6 py-3 bg-dark-800/80 text-gray-300 hover:text-white transition-colors"
+              <Link 
+                to="/signup" 
+                className="rounded-md px-6 py-3 bg-primary-600/90 hover:bg-primary-600 text-white transition-colors backdrop-blur-sm purple-glow"
+              >
+                Start now →
+              </Link>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              Download the app →
-            </Link>
+              <Link 
+                to="#demo" 
+                className="rounded-md px-6 py-3 bg-dark-800/80 text-gray-300 hover:text-white transition-colors"
+              >
+                Download the app →
+              </Link>
+            </motion.div>
           </motion.div>
         </div>
         
-        {/* Example cards grid similar to ChatGPT landing page */}
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          {exampleCards.map((card, index) => (
-            <motion.div 
-              key={index} 
-              className="glossy-card p-6 rounded-xl text-left hover:bg-dark-700/50 cursor-pointer glossy-purple-accent"
-              whileHover={{ 
-                scale: 1.02,
-                rotate: [0, 0.5],
-                transition: {
-                  rotate: { repeat: Infinity, repeatType: "mirror", duration: 0.5 }
+        {/* Example cards grid with continuous horizontal movement */}
+        <div className="relative overflow-hidden py-10">
+          <div className="relative" style={{ width: '100%', overflowX: 'hidden' }}>
+            {/* First row - left to right */}
+            <motion.div
+              className="flex gap-4 flex-nowrap"
+              animate={{ 
+                x: ["calc(-50%)", "0%"] 
+              }}
+              transition={{ 
+                x: {
+                  duration: 15,
+                  repeat: Infinity,
+                  repeatType: "loop",
+                  ease: "linear"
                 }
               }}
-              transition={{ type: "spring", stiffness: 300 }}
+              style={{
+                width: "max-content"
+              }}
             >
-              <div className="flex items-start gap-3">
-                <motion.span 
-                  className="text-2xl"
-                  animate={{ rotate: [0, 5, 0, -5, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, delay: index * 0.5 }}
+              {/* Duplicate the cards to create an infinite loop effect */}
+              {[...exampleCards, ...exampleCards].map((card, index) => (
+                <motion.div 
+                  key={index} 
+                  className="glossy-card p-6 rounded-xl text-left hover:bg-dark-700/50 cursor-pointer glossy-purple-accent flex-shrink-0"
+                  style={{ width: "300px" }}
+                  whileHover={{ scale: 1.05 }}
                 >
-                  {card.icon}
-                </motion.span>
-                <div>
-                  <h3 className="font-medium text-white mb-1">{card.title}</h3>
-                  <p className="text-gray-400 text-sm">{card.description}</p>
-                </div>
-              </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">
+                      {card.icon}
+                    </span>
+                    <div>
+                      <h3 className="font-medium text-white mb-1">
+                        {card.title}
+                      </h3>
+                      <p className="text-gray-400 text-sm">{card.description}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
             </motion.div>
-          ))}
-        </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );

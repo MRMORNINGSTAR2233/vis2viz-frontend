@@ -60,6 +60,9 @@ const secondRowFeatures = [
   },
 ];
 
+// Combine all features for the scrolling animation
+const allFeatures = [...features, ...secondRowFeatures];
+
 export default function Features() {
   return (
     <section id="features" className="py-20 md:py-28 relative">
@@ -67,7 +70,6 @@ export default function Features() {
       <motion.div 
         className="absolute top-1/4 right-1/4 w-80 h-80 bg-primary-500/10 rounded-full filter blur-3xl opacity-30"
         animate={{ 
-          rotate: [0, 25, 0, -25, 0],
           scale: [1, 1.1, 1, 0.9, 1]
         }}
         transition={{ 
@@ -79,7 +81,6 @@ export default function Features() {
       <motion.div 
         className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-secondary-500/10 rounded-full filter blur-3xl opacity-30"
         animate={{ 
-          rotate: [0, -35, 0, 35, 0],
           scale: [1, 0.9, 1, 1.1, 1]
         }}
         transition={{ 
@@ -99,7 +100,10 @@ export default function Features() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-secondary-400">
+            <span 
+              className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-secondary-400"
+              style={{ backgroundSize: '200% 100%' }}
+            >
               Writes, brainstorms, edits,
             </span> and explores ideas with you
           </motion.h2>
@@ -115,65 +119,90 @@ export default function Features() {
           </motion.p>
         </div>
         
-        <div className="space-y-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
+        {/* Features with continuous right to left motion */}
+        <div className="space-y-12">
+          {/* First row */}
+          <div className="relative overflow-hidden py-4">
+            <div className="relative" style={{ width: '100%', overflowX: 'hidden' }}>
               <motion.div
-                key={index}
-                className="glossy-card rounded-xl p-6 glossy-purple-accent"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.1 * index }}
-                whileHover={{ 
-                  scale: 1.03,
-                  rotate: [0, 0.5],
-                  transition: {
-                    rotate: { repeat: Infinity, repeatType: "mirror", duration: 0.5 }
+                className="flex gap-4 flex-nowrap"
+                animate={{ 
+                  x: ["0%", "calc(-50%)"] 
+                }}
+                transition={{ 
+                  x: {
+                    duration: 12,
+                    repeat: Infinity,
+                    repeatType: "loop",
+                    ease: "linear"
                   }
                 }}
+                style={{
+                  width: "max-content"
+                }}
               >
-                <motion.div 
-                  className="rounded-full w-12 h-12 flex items-center justify-center bg-primary-500/20 text-primary-400 mb-4"
-                  animate={{ rotate: [0, 5, 0, -5, 0] }}
-                  transition={{ duration: 8, repeat: Infinity, delay: index * 0.5 }}
-                >
-                  {feature.icon}
-                </motion.div>
-                <h3 className="text-xl font-medium text-white mb-2">{feature.title}</h3>
-                <p className="text-gray-400">{feature.description}</p>
+                {/* Duplicate the features to create an infinite loop effect */}
+                {[...allFeatures, ...allFeatures].map((feature, index) => (
+                  <motion.div
+                    key={index}
+                    className="glossy-card rounded-xl p-6 glossy-purple-accent flex-shrink-0"
+                    style={{ width: "350px" }}
+                    initial={{ opacity: 1 }}
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <div 
+                      className="rounded-full w-12 h-12 flex items-center justify-center bg-primary-500/20 text-primary-400 mb-4"
+                    >
+                      {feature.icon}
+                    </div>
+                    <h3 className="text-xl font-medium text-white mb-2">{feature.title}</h3>
+                    <p className="text-gray-400">{feature.description}</p>
+                  </motion.div>
+                ))}
               </motion.div>
-            ))}
+            </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {secondRowFeatures.map((feature, index) => (
+          {/* Second row - slightly faster */}
+          <div className="relative overflow-hidden py-4">
+            <div className="relative" style={{ width: '100%', overflowX: 'hidden' }}>
               <motion.div
-                key={index}
-                className="glossy-card rounded-xl p-6 glossy-purple-accent"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.1 * index + 0.3 }}
-                whileHover={{ 
-                  scale: 1.03,
-                  rotate: [0, -0.5],
-                  transition: {
-                    rotate: { repeat: Infinity, repeatType: "mirror", duration: 0.5 }
+                className="flex gap-4 flex-nowrap"
+                animate={{ 
+                  x: ["0%", "calc(-50%)"] 
+                }}
+                transition={{ 
+                  x: {
+                    duration: 9,
+                    repeat: Infinity,
+                    repeatType: "loop",
+                    ease: "linear"
                   }
                 }}
+                style={{
+                  width: "max-content"
+                }}
               >
-                <motion.div 
-                  className="rounded-full w-12 h-12 flex items-center justify-center bg-secondary-500/20 text-secondary-400 mb-4"
-                  animate={{ rotate: [0, -5, 0, 5, 0] }}
-                  transition={{ duration: 8, repeat: Infinity, delay: index * 0.5 + 0.5 }}
-                >
-                  {feature.icon}
-                </motion.div>
-                <h3 className="text-xl font-medium text-white mb-2">{feature.title}</h3>
-                <p className="text-gray-400">{feature.description}</p>
+                {/* Duplicate and reverse the features for variety */}
+                {[...allFeatures.reverse(), ...allFeatures.reverse()].map((feature, index) => (
+                  <motion.div
+                    key={`second-${index}`}
+                    className="glossy-card rounded-xl p-6 glossy-purple-accent flex-shrink-0"
+                    style={{ width: "350px" }}
+                    initial={{ opacity: 1 }}
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <div 
+                      className="rounded-full w-12 h-12 flex items-center justify-center bg-secondary-500/20 text-secondary-400 mb-4"
+                    >
+                      {feature.icon}
+                    </div>
+                    <h3 className="text-xl font-medium text-white mb-2">{feature.title}</h3>
+                    <p className="text-gray-400">{feature.description}</p>
+                  </motion.div>
+                ))}
               </motion.div>
-            ))}
+            </div>
           </div>
         </div>
       </div>
