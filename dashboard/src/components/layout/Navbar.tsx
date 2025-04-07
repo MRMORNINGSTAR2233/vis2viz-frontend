@@ -97,7 +97,7 @@ export default function Navbar() {
             whileTap={{ scale: 0.95 }}
             className="purple-glow"
           >
-            <Link to="/signup" className="inline-flex items-center justify-center rounded-md bg-primary-600/90 hover:bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors backdrop-blur-sm">
+            <Link to="/chat" className="inline-flex items-center justify-center rounded-md bg-primary-600/90 hover:bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors backdrop-blur-sm">
               Try Now
             </Link>
           </motion.div>

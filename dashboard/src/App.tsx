@@ -1,4 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import './index.css';
+
+// Landing page components
 import Navbar from './components/layout/Navbar';
 import Hero from './components/layout/Hero';
 import Features from './components/layout/Features';
@@ -9,8 +13,11 @@ import CircuitElements from './components/effects/CircuitElements';
 import FloatingShapes from './components/effects/FloatingShapes';
 import HowItWorks from './components/sections/HowItWorks';
 import Pricing from './components/sections/Pricing';
-import { useEffect } from 'react';
-import './index.css';
+
+// Chat components
+import ChatLayout from './components/layout/ChatLayout';
+import ChatPage from './pages/chat/ChatPage';
+import ChatDetails from './pages/chat/ChatDetails';
 
 function LandingPage() {
   useEffect(() => {
@@ -46,7 +53,15 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        {/* Add more routes as needed */}
+        
+        {/* Chat routes */}
+        <Route path="/chat" element={<ChatLayout />}>
+          <Route index element={<ChatPage />} />
+          <Route path=":chatId" element={<ChatDetails />} />
+        </Route>
+
+        {/* Fallback route */}
+        <Route path="*" element={<LandingPage />} />
       </Routes>
     </Router>
   );
