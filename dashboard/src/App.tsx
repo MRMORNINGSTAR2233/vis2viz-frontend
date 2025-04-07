@@ -18,6 +18,7 @@ import Pricing from './components/sections/Pricing';
 import ChatLayout from './components/layout/ChatLayout';
 import ChatPage from './pages/chat/ChatPage';
 import ChatDetails from './pages/chat/ChatDetails';
+import NewDataSourcePage from './pages/chat/NewDataSourcePage';
 
 function LandingPage() {
   useEffect(() => {
@@ -58,6 +59,8 @@ function App() {
         <Route path="/chat" element={<ChatLayout />}>
           <Route index element={<ChatPage />} />
           <Route path=":chatId" element={<ChatDetails />} />
+          <Route path="data-source" element={<NewDataSourcePage />} />
+          <Route path="new" element={<ChatDetails />} />
         </Route>
 
         {/* Fallback route */}
