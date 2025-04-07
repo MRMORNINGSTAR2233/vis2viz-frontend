@@ -6,16 +6,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar'
 import { Separator } from '../../components/ui/separator';
 import HolographicBackground from '../../components/effects/HolographicBackground';
 import { DataSource } from './NewDataSourcePage';
+import DataVisualization, { VisualizationData } from '../../components/chat/DataVisualization';
 
 interface Message {
   id: string;
   content: string;
   sender: 'user' | 'bot';
   timestamp: Date;
-  visualization?: {
-    type: string;
-    imageUrl: string;
-  };
+  visualization?: VisualizationData | VisualizationData[];
 }
 
 export default function ChatDetails() {
@@ -79,7 +77,7 @@ export default function ChatDetails() {
                  chatId === '2' ? 'Marketing Analytics' : 
                  chatId === '3' ? 'Sales Dashboard' : 'New Chat');
           
-          // Sample messages for existing chats
+          // Sample messages for existing chats with visualization data
           setMessages([
             {
               id: '1',
@@ -101,13 +99,26 @@ export default function ChatDetails() {
             },
             {
               id: '4',
-              content: 'I\'ve created a visualization that combines a bar chart for total regional sales comparison with line charts showing quarterly trends for each region. The visualization allows you to see both the overall comparison and temporal patterns simultaneously.',
+              content: 'I\'ve created a visualization that combines a bar chart for total regional sales comparison with line charts showing quarterly trends for each region.',
               sender: 'bot',
               timestamp: new Date(Date.now() - 1000 * 60 * 24),
               visualization: {
-                type: 'combination chart',
-                imageUrl: 'https://via.placeholder.com/800x400',
-              },
+                type: 'bar',
+                title: 'Regional Sales Comparison',
+                description: 'Total sales by region with quarterly breakdown',
+                data: [
+                  { region: 'North', sales: 4300, Q1: 1200, Q2: 900, Q3: 1000, Q4: 1200 },
+                  { region: 'South', sales: 3800, Q1: 800, Q2: 1100, Q3: 950, Q4: 950 },
+                  { region: 'East', sales: 5200, Q1: 1400, Q2: 1300, Q3: 1250, Q4: 1250 },
+                  { region: 'West', sales: 4100, Q1: 1000, Q2: 1050, Q3: 1100, Q4: 950 },
+                ],
+                config: {
+                  dataKeys: ['sales'],
+                  xAxisDataKey: 'region',
+                  colors: ['#8884d8', '#82ca9d', '#ffc658', '#ff8042']
+                },
+                footer: 'Data updated daily'
+              }
             },
           ]);
         } else {
@@ -168,20 +179,147 @@ export default function ChatDetails() {
           inputMessage.toLowerCase().includes('graph') || 
           inputMessage.toLowerCase().includes('visual')) {
         setTimeout(() => {
+          // Generate visualization based on prompt
+          let visualization: VisualizationData | undefined;
+          
+          if (inputMessage.toLowerCase().includes('bar')) {
+            visualization = {
+              type: 'bar',
+              title: 'Monthly Revenue',
+              description: 'Revenue breakdown by month',
+              data: [
+                { month: 'Jan', revenue: 4000, expenses: 2400 },
+                { month: 'Feb', revenue: 3000, expenses: 1398 },
+                { month: 'Mar', revenue: 2000, expenses: 9800 },
+                { month: 'Apr', revenue: 2780, expenses: 3908 },
+                { month: 'May', revenue: 1890, expenses: 4800 },
+                { month: 'Jun', revenue: 2390, expenses: 3800 },
+              ],
+              config: {
+                dataKeys: ['revenue', 'expenses'],
+                xAxisDataKey: 'month',
+                colors: ['#8884d8', '#82ca9d']
+              },
+              footer: 'Data updated daily'
+            };
+          } else if (inputMessage.toLowerCase().includes('line')) {
+            visualization = {
+              type: 'line',
+              title: 'Product Performance Trend',
+              description: 'Monthly performance of products',
+              data: [
+                { month: 'Jan', product1: 4000, product2: 2400, product3: 1800 },
+                { month: 'Feb', product1: 3000, product2: 1398, product3: 2800 },
+                { month: 'Mar', product1: 2000, product2: 9800, product3: 3200 },
+                { month: 'Apr', product1: 2780, product2: 3908, product3: 4100 },
+                { month: 'May', product1: 1890, product2: 4800, product3: 2300 },
+                { month: 'Jun', product1: 2390, product2: 3800, product3: 2500 },
+              ],
+              config: {
+                dataKeys: ['product1', 'product2', 'product3'],
+                xAxisDataKey: 'month',
+                colors: ['#8884d8', '#82ca9d', '#ffc658']
+              }
+            };
+          } else if (inputMessage.toLowerCase().includes('pie')) {
+            visualization = {
+              type: 'pie',
+              title: 'Revenue Distribution by Category',
+              data: [
+                { name: 'Electronics', value: 400 },
+                { name: 'Clothing', value: 300 },
+                { name: 'Home & Kitchen', value: 200 },
+                { name: 'Books', value: 100 },
+                { name: 'Others', value: 150 }
+              ],
+              config: {
+                dataKeys: ['value'],
+                xAxisDataKey: 'name'
+              }
+            };
+          } else if (inputMessage.toLowerCase().includes('retention') || inputMessage.toLowerCase().includes('cohort')) {
+            visualization = {
+              type: 'retention',
+              title: 'User Cohort Retention',
+              data: [
+                {"cohort":"Jan","month0":100,"month1":88.8,"month2":79.5,"month3":74.2,"month4":68.2,"month5":65.4,"month6":59.4,"totalUsers":2854},
+                {"cohort":"Feb","month0":100,"month1":89.2,"month2":80.6,"month3":72.1,"month4":65.3,"month5":62.3,"month6":55.7,"totalUsers":2960},
+                {"cohort":"Mar","month0":100,"month1":90.1,"month2":82.3,"month3":75.4,"month4":68.9,"month5":64.1,"month6":0,"totalUsers":3112},
+                {"cohort":"Apr","month0":100,"month1":87.3,"month2":78.4,"month3":71.8,"month4":65.2,"month5":0,"month6":0,"totalUsers":2841},
+                {"cohort":"May","month0":100,"month1":85.7,"month2":76.8,"month3":69.9,"month4":0,"month5":0,"month6":0,"totalUsers":2975},
+                {"cohort":"Jun","month0":100,"month1":86.4,"month2":77.3,"month3":0,"month4":0,"month5":0,"month6":0,"totalUsers":3214},
+                {"cohort":"Jul","month0":100,"month1":88.2,"month2":0,"month3":0,"month4":0,"month5":0,"month6":0,"totalUsers":3156}
+              ],
+              config: {
+                colorScale: 'purple'
+              }
+            };
+          } else if (inputMessage.toLowerCase().includes('area')) {
+            visualization = {
+              type: 'area',
+              title: 'Website Traffic Analysis',
+              description: 'Daily traffic sources',
+              data: [
+                { day: 'Mon', organic: 4000, direct: 2400, referral: 1800 },
+                { day: 'Tue', organic: 3000, direct: 1398, referral: 2800 },
+                { day: 'Wed', organic: 2000, direct: 3800, referral: 3200 },
+                { day: 'Thu', organic: 2780, direct: 3908, referral: 1908 },
+                { day: 'Fri', organic: 1890, direct: 4800, referral: 2300 },
+                { day: 'Sat', organic: 2390, direct: 2800, referral: 1500 },
+                { day: 'Sun', organic: 3490, direct: 1300, referral: 1100 },
+              ],
+              config: {
+                dataKeys: ['organic', 'direct', 'referral'],
+                xAxisDataKey: 'day'
+              }
+            };
+          } else {
+            // Default to bar chart
+            visualization = {
+              type: 'bar',
+              title: 'Data Visualization',
+              description: 'Generated visualization based on your request',
+              data: [
+                { category: 'A', value: 4000 },
+                { category: 'B', value: 3000 },
+                { category: 'C', value: 2000 },
+                { category: 'D', value: 2780 },
+                { category: 'E', value: 1890 },
+                { category: 'F', value: 2390 },
+              ],
+              config: {
+                dataKeys: ['value'],
+                xAxisDataKey: 'category'
+              }
+            };
+          }
+          
           const visualizationResponse: Message = {
             id: (Date.now() + 2).toString(),
             content: 'Here\'s the visualization you requested:',
             sender: 'bot',
             timestamp: new Date(),
-            visualization: {
-              type: 'data visualization',
-              imageUrl: 'https://via.placeholder.com/800x400',
-            },
+            visualization: visualization
           };
           setMessages(prev => [...prev, visualizationResponse]);
         }, 3000);
       }
     }, 1000);
+  };
+
+  // Handle visualization edits
+  const handleVisualizationEdit = (messageId: string, editedData: VisualizationData) => {
+    setMessages(prev => prev.map(message => {
+      if (message.id === messageId && message.visualization) {
+        return {
+          ...message,
+          visualization: Array.isArray(message.visualization) 
+            ? message.visualization.map(v => (v.title === editedData.title ? editedData : v))
+            : editedData
+        };
+      }
+      return message;
+    }));
   };
 
   // Handle back button for mobile
@@ -253,7 +391,7 @@ export default function ChatDetails() {
                 </Avatar>
               )}
               
-              <div className="space-y-2">
+              <div className={`space-y-2 ${message.visualization ? 'w-full max-w-[800px]' : ''}`}>
                 <div 
                   className={`p-3 rounded-lg ${
                     message.sender === 'user' 
@@ -265,21 +403,16 @@ export default function ChatDetails() {
                 </div>
                 
                 {message.visualization && (
-                  <div className="p-2 rounded-lg bg-dark-700 border border-white/5">
-                    <div className="text-xs text-white/60 mb-2 flex items-center gap-1">
+                  <div className="rounded-lg bg-dark-700/50 backdrop-blur-sm border border-white/5">
+                    <div className="text-xs text-white/60 p-2 flex items-center gap-1 border-b border-white/5">
                       <ChartBar size={12} />
-                      <span>{message.visualization.type}</span>
+                      <span>Data Visualization</span>
                     </div>
-                    <img 
-                      src={message.visualization.imageUrl} 
-                      alt="Visualization" 
-                      className="rounded w-full max-h-80 object-contain"
-                    />
-                    <div className="flex justify-end mt-2">
-                      <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs">
-                        <Download size={12} />
-                        <span>Download</span>
-                      </Button>
+                    <div className="p-2">
+                      <DataVisualization 
+                        visualizationData={message.visualization} 
+                        onEditComplete={(editedData) => handleVisualizationEdit(message.id, editedData)}
+                      />
                     </div>
                   </div>
                 )}
