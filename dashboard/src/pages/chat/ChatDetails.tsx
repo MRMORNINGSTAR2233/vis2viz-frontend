@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Send, ChartBar, ChevronLeft, MoreVertical, Download, 
-  Database, FileSpreadsheet, Mic, MicOff, Globe, Check, Volume2, VolumeX
+  Database, FileSpreadsheet, Globe, Check, Volume2, VolumeX
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Avatar, AvatarFallback } from '../../components/ui/avatar';
@@ -98,6 +98,8 @@ export default function ChatDetails() {
   const [isTtsEnabled, setIsTtsEnabled] = useState(true);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [currentlySpeakingId, setCurrentlySpeakingId] = useState<string | null>(null);
+  const [networkStatus, setNetworkStatus] = useState<'online' | 'offline'>('online');
+  const [recognitionError, setRecognitionError] = useState<string | null>(null);
 
   // Language options
   const languageOptions: LanguageOption[] = [
@@ -148,6 +150,32 @@ export default function ChatDetails() {
     recognition.onerror = (event: { error: string }) => {
       console.error('Speech recognition error', event.error);
       setIsListening(false);
+      
+      // Set appropriate error message
+      switch(event.error) {
+        case 'network':
+          setRecognitionError('Network error. Please check your internet connection.');
+          break;
+        case 'not-allowed':
+          setRecognitionError('Microphone access denied. Please allow microphone access in your browser settings.');
+          break;
+        case 'aborted':
+          setRecognitionError(null); // User cancelled
+          break;
+        case 'audio-capture':
+          setRecognitionError('Failed to capture audio. Please check if your microphone is working.');
+          break;
+        case 'no-speech':
+          setRecognitionError('No speech detected. Please try speaking louder or check your microphone.');
+          break;
+        default:
+          setRecognitionError(`Speech recognition error: ${event.error}`);
+      }
+      
+      // Clear error after 5 seconds
+      setTimeout(() => {
+        setRecognitionError(null);
+      }, 5000);
     };
 
     // Handle end of recognition
@@ -176,6 +204,14 @@ export default function ChatDetails() {
     if (isListening) {
       recognitionRef.current?.stop();
       setIsListening(false);
+      
+      // Automatically send the message when stopping listening
+      if (transcript.trim() !== '') {
+        // Use setTimeout to ensure the transcript is fully updated
+        setTimeout(() => {
+          handleSendMessage();
+        }, 100);
+      }
     } else {
       setTranscript('');
       recognitionRef.current?.start();
@@ -223,8 +259,8 @@ export default function ChatDetails() {
                 const welcomeMessage: Message = {
                   id: '1',
                   content: source.type === 'database'
-                    ? `I'm connected to your ${source.config?.type || 'database'} database "${source.config?.database || 'unnamed'}". What would you like to visualize?`
-                    : `I've loaded your CSV file "${source.config?.fileName || 'unnamed'}". What would you like to visualize from this data?`,
+                    ? `I've connected to your ${source.config?.type || 'database'} "${source.config?.database || 'unnamed'}". Empower your decision-making by using your voice to ask questions like "Analyze top trends in monthly sales" or "Create a visual comparison of performance metrics".`
+                    : `I've loaded your CSV file "${source.config?.fileName || 'unnamed'}". Speak naturally to transform this data into actionable insights - no technical expertise needed. Try saying "Show me patterns in this dataset" or "Visualize the key relationships between columns".`,
                   role: 'bot',
                   createdAt: new Date().toISOString(),
                 };
@@ -300,7 +336,7 @@ export default function ChatDetails() {
           setMessages([
             {
               id: '1',
-              content: 'Welcome to Auralytics! I can help you visualize and analyze your data using voice commands. To get started, click the microphone button and tell me what you want to explore.',
+              content: 'Welcome to Auralytics! Your voice is now the key to unlocking powerful data insights. Just speak naturally to transform complex data into actionable visualizations - no technical expertise required. Try phrases like "Show sales performance across regions" or "Create a trend analysis of quarterly results".',
               role: 'bot',
               createdAt: new Date().toISOString(),
             }
@@ -508,6 +544,36 @@ export default function ChatDetails() {
     }
   }, [messages, isLoading, isTtsEnabled]);
 
+  // Track network status
+  useEffect(() => {
+    const handleOnline = () => {
+      setNetworkStatus('online');
+      setRecognitionError(null);
+    };
+    
+    const handleOffline = () => {
+      setNetworkStatus('offline');
+      setRecognitionError('Network connection lost. Voice recognition requires internet.');
+      
+      // Stop listening if active
+      if (isListening) {
+        recognitionRef.current?.stop();
+        setIsListening(false);
+      }
+    };
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    // Set initial state
+    setNetworkStatus(navigator.onLine ? 'online' : 'offline');
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [isListening]);
+
   if (isLoading) {
     return (
       <div className="h-full flex items-center justify-center">
@@ -602,6 +668,50 @@ export default function ChatDetails() {
         </div>
       </header>
 
+      {/* Hero Section */}
+      {messages.length === 0 && (
+        <div className="p-6 text-center backdrop-blur-sm bg-dark-800/30 border-b border-white/5">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-primary-400 to-secondary-400 bg-clip-text text-transparent mb-3">Voice-Powered Data Visualization</h2>
+          <p className="text-white/80 mb-6 max-w-3xl mx-auto">Transform spoken queries into powerful visualizations - no technical expertise required.</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left max-w-4xl mx-auto mb-6">
+            <div className="bg-dark-700/50 p-4 rounded-lg border border-white/5 hover:border-primary-500/30 transition-all hover:bg-dark-700/70">
+              <MicIcon className="h-6 w-6 text-primary-400 mb-2" />
+              <h3 className="font-medium text-white mb-1">Speak Your Query</h3>
+              <p className="text-sm text-white/70">Empower your decisions with instant, voice-driven insights at your fingertips.</p>
+            </div>
+            
+            <div className="bg-dark-700/50 p-4 rounded-lg border border-white/5 hover:border-primary-500/30 transition-all hover:bg-dark-700/70">
+              <ChartBar className="h-6 w-6 text-primary-400 mb-2" />
+              <h3 className="font-medium text-white mb-1">Real-Time Visualization</h3>
+              <p className="text-sm text-white/70">Transform spoken queries into actionable visual data for immediate insights.</p>
+            </div>
+            
+            <div className="bg-dark-700/50 p-4 rounded-lg border border-white/5 hover:border-primary-500/30 transition-all hover:bg-dark-700/70">
+              <Globe className="h-6 w-6 text-primary-400 mb-2" />
+              <h3 className="font-medium text-white mb-1">Multilingual Support</h3>
+              <p className="text-sm text-white/70">Drive collaborative analytics across diverse teams with support for multiple languages.</p>
+            </div>
+          </div>
+          
+          <div className="flex flex-col md:flex-row gap-3 justify-center mb-6">
+            <div className="bg-dark-800/70 p-3 rounded-lg border border-white/10 max-w-md">
+              <h4 className="text-primary-400 text-sm font-medium mb-1">Proactive Decision-Making</h4>
+              <p className="text-xs text-white/70">Enable faster, better decisions through interactive conversational analytics that highlight the most important patterns.</p>
+            </div>
+            
+            <div className="bg-dark-800/70 p-3 rounded-lg border border-white/10 max-w-md">
+              <h4 className="text-primary-400 text-sm font-medium mb-1">No Technical Expertise Required</h4>
+              <p className="text-xs text-white/70">Simplify complex data exploration - just speak naturally and let Auralytics handle the technical details.</p>
+            </div>
+          </div>
+          
+          <div className="text-sm text-white/60 bg-dark-800/50 p-3 rounded-lg inline-block">
+            <p>Try saying: <span className="text-primary-400">"Show me a bar chart of sales by region"</span> or <span className="text-primary-400">"Compare quarterly results"</span></p>
+          </div>
+        </div>
+      )}
+
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
         {messages.map((message) => (
@@ -681,8 +791,17 @@ export default function ChatDetails() {
         {/* Voice transcript */}
         {transcript && (
           <div className="flex justify-end">
-            <div className="bg-primary-600/20 text-white/80 p-3 rounded-lg max-w-[80%] text-sm italic">
-              {transcript}...
+            <div className="bg-gradient-to-r from-primary-600/30 to-secondary-600/30 text-white/90 p-4 rounded-lg max-w-[80%] text-sm border border-white/10 shadow-glow">
+              <div className="flex items-center gap-2 mb-1">
+                <MicIcon className="h-3 w-3 text-primary-400 animate-pulse" /> 
+                <span className="text-xs text-white/60">Processing voice input...</span>
+              </div>
+              <p className="font-medium">{transcript}</p>
+              <div className="mt-2 flex space-x-1 justify-center">
+                <span className="w-1 h-1 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                <span className="w-1 h-1 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '100ms' }}></span>
+                <span className="w-1 h-1 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '200ms' }}></span>
+              </div>
             </div>
           </div>
         )}
@@ -695,26 +814,52 @@ export default function ChatDetails() {
       {/* Voice-Only Input Area */}
       <div className="border-t border-white/5 p-4">
         <div className="flex flex-col space-y-4">
+          {recognitionError && (
+            <div className="p-3 bg-red-950/30 border border-red-600/30 rounded-lg text-red-400 text-sm flex items-start gap-2">
+              <div className="bg-red-600/20 p-1 rounded-full mt-0.5">
+                <span className="block h-2 w-2 rounded-full bg-red-500"></span>
+              </div>
+              <div>
+                <p className="font-medium">Voice Recognition Error</p>
+                <p className="text-xs text-red-400/80 mt-1">{recognitionError}</p>
+              </div>
+            </div>
+          )}
+          
           {transcript && (
-            <div className="p-2 bg-dark-800 rounded-md text-white/80 italic">
-              {transcript}
+            <div className="p-3 bg-dark-800/80 backdrop-blur-sm rounded-lg border border-white/10 text-white/90">
+              <div className="flex items-center gap-2 mb-1">
+                <MicIcon className="h-4 w-4 text-primary-400" />
+                <span className="text-xs font-medium text-primary-400">Current Transcript</span>
+              </div>
+              <p className="text-sm">{transcript}</p>
             </div>
           )}
           
           <div className="flex items-center gap-2 justify-between">
             <div className="flex items-center gap-2">
-              <Button
-                onClick={() => setIsListening(!isListening)}
-                variant={isListening ? "secondary" : "outline"}
-                size="icon"
-                className={`${isListening ? 'bg-red-500 hover:bg-red-600' : ''}`}
-              >
-                {isListening ? <StopCircleIcon className="h-5 w-5" /> : <MicIcon className="h-5 w-5" />}
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={toggleListening}
+                      variant={isListening ? "secondary" : "outline"}
+                      size="icon"
+                      className={`${isListening ? 'bg-red-500 hover:bg-red-600' : ''}`}
+                      disabled={networkStatus === 'offline'}
+                    >
+                      {isListening ? <StopCircleIcon className="h-5 w-5" /> : <MicIcon className="h-5 w-5" />}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{isListening ? 'Click to stop recording and send message' : 'Click to start voice recording'}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               
               {isListening && (
                 <span className="text-xs text-white/60 animate-pulse">
-                  Listening...
+                  Listening... (will send automatically when stopped)
                 </span>
               )}
               
@@ -729,6 +874,13 @@ export default function ChatDetails() {
             </div>
             
             <div className="flex items-center gap-2">
+              {networkStatus === 'offline' && (
+                <div className="flex items-center gap-1 text-xs text-amber-400 bg-amber-950/30 px-2 py-1 rounded-full">
+                  <span className="block h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                  <span>Offline</span>
+                </div>
+              )}
+              
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>

@@ -20,6 +20,7 @@ import ChatPage from './pages/chat/ChatPage';
 import ChatDetails from './pages/chat/ChatDetails';
 import NewDataSourcePage from './pages/chat/NewDataSourcePage';
 import EditDataSourcePage from './pages/chat/EditDataSourcePage';
+import SpeechTest from './pages/chat/SpeechTest';
 
 function LandingPage() {
   useEffect(() => {
@@ -64,6 +65,8 @@ function App() {
           <Route path="data-source/edit/:sourceId" element={<EditDataSourcePage />} />
           <Route path="new" element={<ChatDetails />} />
         </Route>
+
+        <Route path="/speech-test" element={<SpeechTest />} />
 
         {/* Fallback route */}
         <Route path="*" element={<LandingPage />} />

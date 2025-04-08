@@ -1,36 +1,39 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import React from 'react';
+import { Mic, BarChart2, Zap, Lightbulb, Users } from 'lucide-react';
 
-const exampleCards = [
+interface ExampleCard {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}
+
+const exampleCards: ExampleCard[] = [
   {
-    title: "Analyze phone call sentiment",
-    description: "Identify customer satisfaction trends from service call recordings",
-    icon: "🗣️"
+    icon: <Mic className="text-primary-400" />,
+    title: "Empower Decision-Makers",
+    description: "Instant, voice-driven insights for strategic decision-making at your fingertips."
   },
   {
-    title: "Extract podcast insights",
-    description: "Summarize key points and topics from audio content",
-    icon: "🎙️"
+    icon: <BarChart2 className="text-primary-400" />,
+    title: "Transform Spoken Queries",
+    description: "Convert natural language into real-time, actionable visual data instantly."
   },
   {
-    title: "Process meeting recordings",
-    description: "Capture action items and decisions from team discussions",
-    icon: "📝"
+    icon: <Zap className="text-primary-400" />,
+    title: "Enable Proactive Decisions",
+    description: "Interactive conversational analytics for faster, more informed actions."
   },
   {
-    title: "Detect voice biometrics",
-    description: "Authenticate users through unique voice patterns",
-    icon: "🔐"
+    icon: <Lightbulb className="text-primary-400" />,
+    title: "Simplify Data Exploration",
+    description: "Access complex data insights without technical expertise required."
   },
   {
-    title: "Track music engagement",
-    description: "Measure audience response to audio tracks in real-time",
-    icon: "🎵"
-  },
-  {
-    title: "Monitor environmental sounds",
-    description: "Alert to unusual noises in security or industrial settings",
-    icon: "🔊"
+    icon: <Users className="text-primary-400" />,
+    title: "Drive Collaborative Analytics",
+    description: "Accessible analytics across diverse teams and languages."
   }
 ];
 
