@@ -177,6 +177,10 @@ export default function ChatPage() {
     };
 
     return () => {
+      // Cancel any ongoing speech when navigating away
+      window.speechSynthesis.cancel();
+      
+      // Stop recognition when component unmounts
       if (recognition) {
         recognition.stop();
       }
@@ -195,7 +199,31 @@ export default function ChatPage() {
   };
 
   const handleNewChat = () => {
-    navigate('/chat/data-source');
+    // First speak the welcome phrase
+    const welcomePhrase = "Creating a new chat for you. Let's get started.";
+    
+    // Create SpeechSynthesis utterance
+    const utterance = new SpeechSynthesisUtterance(welcomePhrase);
+    utterance.pitch = 1.1;
+    utterance.rate = 1.0;
+    
+    // Speak and navigate when speech is complete
+    utterance.onend = () => {
+      navigate('/chat/new');
+    };
+    
+    // If speech fails, still navigate
+    utterance.onerror = () => {
+      navigate('/chat/new');
+    };
+    
+    // Begin speaking
+    window.speechSynthesis.speak(utterance);
+    
+    // As a fallback, navigate after a timeout
+    setTimeout(() => {
+      navigate('/chat/new');
+    }, 3000);
   };
 
   return (
@@ -315,7 +343,7 @@ export default function ChatPage() {
             <Button
               variant="outline"
               className="h-16 rounded-xl border-white/10 bg-dark-700/30 backdrop-blur-sm hover:bg-dark-700/60 flex items-center gap-3"
-              onClick={() => navigate('/chat/new')}
+              onClick={handleNewChat}
             >
               <div className="w-10 h-10 rounded-full bg-primary-600/20 flex items-center justify-center">
                 <ArrowRight size={20} className="text-primary-400" />

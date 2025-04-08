@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Send, ChartBar, ChevronLeft, MoreVertical, Download, 
-  Database, FileSpreadsheet, Mic, MicOff, Globe, Check
+  Database, FileSpreadsheet, Mic, MicOff, Globe, Check, Volume2, VolumeX
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Avatar, AvatarFallback } from '../../components/ui/avatar';
@@ -95,6 +95,9 @@ export default function ChatDetails() {
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [isTtsEnabled, setIsTtsEnabled] = useState(true);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [currentlySpeakingId, setCurrentlySpeakingId] = useState<string | null>(null);
 
   // Language options
   const languageOptions: LanguageOption[] = [
@@ -340,13 +343,19 @@ export default function ChatDetails() {
 
     // Simulate bot response
     setTimeout(() => {
+      const botResponseText = 'This is a sample response to your voice input: "' + transcript.trim() + '"';
+      
       const botResponse: Message = {
         id: nanoid(),
-        content: 'This is a sample response to your voice input: "' + transcript.trim() + '"',
+        content: botResponseText,
         role: 'bot',
         createdAt: new Date().toISOString(),
       };
+      
       setMessages((prevMessages) => [...prevMessages, botResponse]);
+      
+      // Speak the bot's response automatically
+      speakText(botResponseText);
 
       // If the transcript mentions visualization, charts, or graphs, add a visualization
       if (transcript.toLowerCase().includes('visual') || 
@@ -378,9 +387,10 @@ export default function ChatDetails() {
   };
 
   const handleGenerateVisualization = () => {
+    const visualizationText = 'Here\'s a sample visualization based on your query:';
     const visualizationResponse: Message = {
       id: nanoid(),
-      content: 'Here\'s a sample visualization based on your query:',
+      content: visualizationText,
       role: 'bot',
       createdAt: new Date().toISOString(),
       visualization: {
@@ -403,7 +413,100 @@ export default function ChatDetails() {
     };
     
     setMessages(prev => [...prev, visualizationResponse]);
+    
+    // Also speak the visualization announcement
+    speakText(visualizationText + ' I\'ve created a bar chart showing the distribution of values across different categories.');
   };
+
+  // Function to speak text using the Web Speech API
+  const speakText = (text: string, messageId?: string) => {
+    if (!isTtsEnabled) return;
+    
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+    
+    // Create a new utterance
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Configure voice settings
+    utterance.rate = 1.0;  // Speed - 1.0 is normal speed
+    utterance.pitch = 1.1; // Slightly higher pitch for assistant voice
+    utterance.volume = 1.0; // Full volume
+    
+    // Set the language to match the selected language for speech recognition
+    utterance.lang = selectedLanguage.code;
+    
+    // Optional: Select a specific voice if available
+    const voices = window.speechSynthesis.getVoices();
+    const preferredVoice = voices.find(voice => 
+      voice.lang.includes(selectedLanguage.code.split('-')[0]) && voice.name.includes('Female')
+    );
+    
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
+    
+    // Events
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      if (messageId) setCurrentlySpeakingId(messageId);
+    };
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      setCurrentlySpeakingId(null);
+    };
+    utterance.onerror = () => {
+      setIsSpeaking(false);
+      setCurrentlySpeakingId(null);
+    };
+    
+    // Speak the text
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // Load available voices when the component mounts
+  useEffect(() => {
+    // Some browsers need to wait for voices to load
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      const loadVoices = () => {
+        // Just trigger loading of voices
+        window.speechSynthesis.getVoices();
+      };
+      
+      // Chrome requires waiting for the voiceschanged event
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+      loadVoices(); // For other browsers
+    }
+  }, []);
+
+  // Add cleanup for speech synthesis when component unmounts
+  useEffect(() => {
+    return () => {
+      // Cancel any ongoing speech when navigating away or closing the page
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  // Modify the useEffect for speaking messages to only trigger for new messages
+  useEffect(() => {
+    // Only speak if TTS is enabled and not loading
+    if (!isTtsEnabled || isLoading) return;
+    
+    // Check if messages array has changed and has at least one message
+    if (messages.length > 0) {
+      const latestMessage = messages[messages.length - 1];
+      
+      // Only speak if the latest message is from the bot (Aura)
+      if (latestMessage.role === 'bot') {
+        // Add small delay to allow UI to render first
+        setTimeout(() => {
+          speakText(latestMessage.content, latestMessage.id);
+        }, 500);
+      }
+    }
+  }, [messages, isLoading, isTtsEnabled]);
 
   if (isLoading) {
     return (
@@ -478,6 +581,24 @@ export default function ChatDetails() {
           <Button variant="ghost" size="icon" className="rounded-full">
             <MoreVertical size={16} />
           </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="rounded-full"
+                  onClick={() => setIsTtsEnabled(!isTtsEnabled)}
+                  title={isTtsEnabled ? "Disable text-to-speech" : "Enable text-to-speech"}
+                >
+                  {isTtsEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{isTtsEnabled ? "Disable voice" : "Enable voice"}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </header>
 
@@ -502,14 +623,36 @@ export default function ChatDetails() {
               )}
               
               <div className={`space-y-2 ${message.visualization ? 'w-full max-w-[800px]' : ''}`}>
-                <div 
-                  className={`p-3 rounded-lg ${
-                    message.role === 'user' 
-                      ? 'bg-primary-600 text-white' 
-                      : 'bg-dark-700 text-white border border-white/5'
-                  }`}
-                >
-                  <p className="text-sm">{message.content}</p>
+                <div className="flex items-start gap-2">
+                  <div 
+                    className={`p-3 rounded-lg flex-1 ${
+                      message.role === 'user' 
+                        ? 'bg-primary-600 text-white' 
+                        : 'bg-dark-700 text-white border border-white/5'
+                    }`}
+                  >
+                    <p className="text-sm">{message.content}</p>
+                  </div>
+                  
+                  {/* Add speak button for bot messages */}
+                  {message.role === 'bot' && (
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className={`h-7 w-7 rounded-full transition-all ${
+                        isSpeaking && currentlySpeakingId === message.id 
+                          ? 'bg-primary-600/20 text-primary-400 animate-pulse' 
+                          : 'opacity-60 hover:opacity-100'
+                      }`}
+                      onClick={() => {
+                        setCurrentlySpeakingId(message.id);
+                        speakText(message.content);
+                      }}
+                      title="Read aloud"
+                    >
+                      <Volume2 size={14} />
+                    </Button>
+                  )}
                 </div>
                 
                 {message.visualization && (
