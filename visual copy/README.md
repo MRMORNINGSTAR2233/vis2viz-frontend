@@ -4,7 +4,7 @@ A multi-agent system using LangChain and LangGraph that transforms natural langu
 
 ## Overview
 
-This system uses a coordinated set of agents to process natural language queries, convert them to SQL, execute database queries, and generate interactive visualizations. The entire pipeline is exposed through a REST API and a user-friendly Streamlit interface.
+This system uses a coordinated set of agents to process natural language queries, convert them to SQL, execute database queries, and generate interactive visualizations. The entire pipeline is exposed through a REST API and multiple user interfaces.
 
 ## Architecture
 
@@ -15,7 +15,7 @@ The system consists of the following components:
 3. **Data Query Agent**: Executes SQL commands on the database and retrieves results.
 4. **Visualization Agent**: Transforms data into interactive charts using Plotly.
 5. **API Agent**: Exposes functionality via a FastAPI REST API.
-6. **User Interface Agent**: Provides a Streamlit interface for testing and interacting with the system.
+6. **User Interface Agent**: Provides multiple interfaces for testing and interacting with the system.
 
 ## Project Structure
 
@@ -34,11 +34,18 @@ visual/
 │   ├── __init__.py
 │   ├── create_database.py
 │   └── db_utils.py
-├── ui/                     # User interface
+├── frontend/               # React frontend with D3.js
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── App.js
+│   │   └── index.js
+│   └── package.json
+├── ui/                     # Streamlit user interface
 │   └── streamlit_app.py
 ├── .env                    # Environment variables
 ├── main.py                 # Main script to run the system
-├── requirements.txt        # Project dependencies
+├── requirements.txt        # Backend dependencies
 └── README.md               # Project documentation
 ```
 
@@ -50,11 +57,16 @@ visual/
    python -m venv .venv
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    ```
-3. Install dependencies:
+3. Install backend dependencies:
    ```
    pip install -r requirements.txt
    ```
-4. Set up your environment variables in `.env`:
+4. Install frontend dependencies:
+   ```
+   cd frontend
+   npm install
+   ```
+5. Set up your environment variables in `.env`:
    ```
    GROQ_API_KEY=your_groq_api_key
    ```
@@ -85,15 +97,25 @@ python main.py --api-only
 python main.py --ui-only
 ```
 
+### Option 3: Run the React frontend
+
+```
+# Make sure the API server is running first
+cd frontend
+npm start
+```
+
 ## Accessing the System
 
-- **API**: http://localhost:8000
-  - API documentation: http://localhost:8000/docs
-  - Health check: http://localhost:8000/api/health
-  - Schema: http://localhost:8000/api/schema
-  - Query endpoint: http://localhost:8000/api/query (POST)
+- **API**: http://localhost:8080
+  - API documentation: http://localhost:8080/docs
+  - Health check: http://localhost:8080/api/health
+  - Schema: http://localhost:8080/api/schema
+  - Query endpoint: http://localhost:8080/api/query (POST)
 
-- **UI**: http://localhost:8501 (Streamlit interface)
+- **Streamlit UI**: http://localhost:8501 (Streamlit interface)
+
+- **React Frontend**: http://localhost:3000 (React with D3.js visualizations)
 
 ## Example Queries
 
@@ -109,7 +131,7 @@ python main.py --ui-only
 import requests
 
 response = requests.post(
-    "http://localhost:8000/api/query",
+    "http://localhost:8080/api/query",
     json={"query": "Show me total sales by product category"}
 )
 
@@ -123,16 +145,46 @@ print(result["visualization_html"])  # HTML for visualization
 
 - **Natural Language Processing**: Convert plain English to SQL queries
 - **Context Awareness**: Handle follow-up questions by maintaining conversation context
-- **Interactive Visualizations**: Generate appropriate charts based on query and data
+- **Interactive Visualizations**: 
+  - Generate appropriate charts based on query and data
+  - Plotly visualizations in the Streamlit UI
+  - D3.js visualizations in the React frontend
 - **REST API**: Access all functionality programmatically
-- **User-Friendly Interface**: Explore and test the system through a Streamlit UI
+- **Multiple User Interfaces**: 
+  - Streamlit UI for quick testing
+  - React frontend with D3.js for production use
+
+## React Frontend with D3.js
+
+The React frontend provides a modern, interactive interface for the visualization system:
+
+- **Natural Language Query Interface**: Simple text input for queries
+- **Interactive D3.js Visualizations**: Dynamic, responsive visualizations
+- **Data Table View**: Explore the raw data alongside visualizations
+- **Database Schema Explorer**: View the database structure
+- **Example Queries**: Quick-start with predefined example queries
+
+The frontend communicates with the FastAPI backend and uses D3.js to create custom, interactive visualizations based on the query results.
+
+### D3.js Visualization Types
+
+The system automatically selects the most appropriate visualization type based on the data:
+
+- **Bar Charts**: For categorical comparisons
+- **Line Charts**: For time series and trends
+- **Scatter Plots**: For correlation analysis
+- **Pie Charts**: For part-to-whole relationships
+- **Heatmaps**: For matrix data and correlations
+
+All visualizations are interactive with hover effects, tooltips, and responsive design.
 
 ## Dependencies
 
 - LangChain & LangGraph for agent orchestration
 - Groq API with Gemini model for LLM capabilities
 - FastAPI for REST API
-- Streamlit for user interface
-- Plotly for interactive visualizations
+- Streamlit for testing interface
+- React and D3.js for frontend visualizations
+- Plotly for Streamlit visualizations
 - SQLite for database storage
 - Pandas for data manipulation
