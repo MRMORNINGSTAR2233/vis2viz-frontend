@@ -14,15 +14,21 @@ export interface VisualizationData {
   type: string;
   title: string;
   description?: string;
-  data: any[];
+  data: Record<string, string | number>[];
   config?: {
     dataKeys?: string[];
     xAxisDataKey?: string;
     colors?: string[];
     colorScale?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
   footer?: string;
+}
+
+// Define types for retention data
+interface RetentionItem {
+  cohort: string;
+  [key: string]: string | number;
 }
 
 interface DataVisualizationProps {
@@ -89,7 +95,7 @@ export default function DataVisualization({
       .text(chartData.title);
     
     // Get data
-    const data = chartData.data;
+    const data = chartData.data as RetentionItem[];
     
     // Find month columns dynamically
     const monthColumns = Object.keys(data[0])
@@ -120,8 +126,8 @@ export default function DataVisualization({
     // Add X axis
     svg.append('g')
       .attr('transform', `translate(0,${height})`)
-      .call(d3.axisBottom(x).tickFormat((d: any) => {
-        const month = parseInt(d.replace('month', ''));
+      .call(d3.axisBottom(x).tickFormat((d) => {
+        const month = parseInt(d.toString().replace('month', ''));
         return `M${month}`;
       }))
       .selectAll('text')
@@ -154,12 +160,12 @@ export default function DataVisualization({
       .text('Cohort');
     
     // Create the cells
-    const cells = svg.selectAll('rect')
+    svg.selectAll('rect')
       .data(data.flatMap(d => 
         monthColumns.map(month => ({
           cohort: d.cohort,
           month,
-          value: d[month]
+          value: Number(d[month])
         }))
       ))
       .enter()
@@ -178,7 +184,7 @@ export default function DataVisualization({
         monthColumns.map(month => ({
           cohort: d.cohort,
           month,
-          value: d[month]
+          value: Number(d[month])
         }))
       ))
       .enter()
@@ -552,7 +558,7 @@ export default function DataVisualization({
               outerRadius={80}
               label
             >
-              {data.map((entry, index) => (
+              {data.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
               ))}
             </Pie>

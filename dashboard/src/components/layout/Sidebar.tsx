@@ -69,32 +69,35 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
         try {
           const parsedSources = JSON.parse(storedSources);
           const source = parsedSources.find((s: any) => 
-            (s.type === 'database' && s.config.id === sourceId) || 
-            (s.type === 'csv' && s.config.id === sourceId)
+            s && s.config && (
+              (s.type === 'database' && s.config?.id === sourceId) || 
+              (s.type === 'csv' && s.config?.id === sourceId)
+            )
           );
           
-          if (source) {
+          if (source && source.config) {
             // Format the source data 
             let formattedSource;
             if (source.type === 'database') {
               formattedSource = {
-                id: source.config.id,
-                name: source.config.configName,
+                id: source.config?.id || `db-${Date.now()}`,
+                name: source.config?.configName || 'Unnamed Database',
                 type: 'database',
-                dbType: source.config.type,
-                database: source.config.database
+                dbType: source.config?.type || 'mysql',
+                database: source.config?.database || 'Unknown'
               } as DatabaseSource;
             } else {
               formattedSource = {
-                id: source.config.id,
-                name: source.config.name,
+                id: source.config?.id || `csv-${Date.now()}`,
+                name: source.config?.name || 'Unnamed CSV',
                 type: 'csv',
-                fileName: source.config.fileName,
-                fileSize: source.config.fileSize
+                fileName: source.config?.fileName || 'unknown.csv',
+                fileSize: source.config?.fileSize || 0
               } as CsvSource;
             }
             setActiveDataSource(formattedSource);
           } else {
+            console.warn(`Data source with ID ${sourceId} not found or has invalid format`);
             setActiveDataSource(null);
           }
         } catch (error) {

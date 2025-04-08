@@ -64,21 +64,22 @@ export default function CsvUpload({ onUpload }: CsvUploadProps) {
       <div 
         className={`glass-panel p-6 text-center border-2 border-dashed ${
           isDragging ? 'border-primary-400 bg-primary-400/5' : 'border-white/10'
-        } rounded-lg cursor-pointer transition-colors`}
+        } rounded-lg transition-colors`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
-        role="button"
-        aria-label="Upload CSV file"
-        tabIndex={0}
       >
         {!selectedFile ? (
           <div className="flex flex-col items-center">
             <FileUp size={36} className="text-primary-400 mb-2" />
             <h3 className="text-lg font-medium mb-1">Upload CSV File</h3>
             <p className="text-sm text-white/60 mb-4">Drag and drop a CSV file or click to browse</p>
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-2"
+              onClick={() => fileInputRef.current?.click()}
+            >
               <Upload size={14} />
               Select File
             </Button>
@@ -95,10 +96,7 @@ export default function CsvUpload({ onUpload }: CsvUploadProps) {
               </div>
             </div>
             <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                handleRemoveFile();
-              }}
+              onClick={handleRemoveFile}
               className="text-white/60 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors"
               aria-label="Remove file"
               title="Remove file"
